@@ -1,30 +1,41 @@
+from tabulate import tabulate
+
 # insert student data into the list
-def insert():
-    global empdb
+def insert(empdb):
     global lst
     cl = []
     for i in lst:
         cl.append(input(f'Enter {i} '))
     empdb.append(cl)
 
-def update(studentIndex):
-    pass
-
-def delete(studentIndex):
-    pass
-
-def show_one_student(studentIndex):
+# update student data in the database
+def update(empdb, find):
+    #update logic
     global lst
-    global empdb
+    for index, attribute in enumerate(lst, 0):
+        empdb[find][index] = input(f'Enter {attribute} : ')
+
+def delete(empdb, roll, search):
+    find = search(empdb, roll)
+    if find != -1:
+        empdb.remove(empdb[find])
+        print(f'Student data with roll no. { roll } has been removes!')
+    else:
+        print('It is already removed or enter a valid roll no.')
+
+def show_one_student(studentIndex, empdb):
+    global lst
+    data = []
     for attribute in range(0, 5):
-            print(f"{lst[attribute].capitalize()}\t  : {empdb[studentIndex][attribute].capitalize()}")
+        data.append([lst[attribute].capitalize(), empdb[studentIndex][attribute]])
+    print(tabulate(data, headers=['Attributes', 'Details'], tablefmt='grid'))      
 
 
-def show_all_student():
-    pass
+def show_all_student(empdb):
+    global lst
+    print(tabulate(empdb, headers=lst, tablefmt='grid'))
 
-def search(rollno) -> int:
-    global empdb
+def search(empdb, rollno) -> int:
     index = -1
     for student in empdb:
         if student[0] == rollno:
@@ -51,27 +62,41 @@ while flag:
     
     if choice == 1:
         # Insert parts
-        insert()
+        insert(empdb)
         print(empdb)
     elif choice == 2:
         # Update parts
-        pass
+        stdRoll = input('Enter roll no. : ')
+        find = search(empdb, stdRoll)
+        if find != -1:
+            update(empdb, find)
+        else:
+            print('Student does not exist!')
     elif choice == 3:
         # delete part here
-        pass
+        stdRoll = input('Enter roll no. : ')
+        delete(empdb, stdRoll, search)
     elif choice == 4:
         # showing part here
-        pass
+        if len(empdb) != 0:
+            show_all_student(empdb)
+        else:
+            print('Database is empty!')
     elif choice == 5:
         # searching part here
-        pass
-    elif choice == 6:
-        # for exiting from the loop
         stdRoll = input('Enter student roll no. : ')
-        find = search(stdRoll)
-        if stdRoll != -1:
-            show_one_student(find)
+        find = search(empdb, stdRoll)
+        if find != -1:
+            print("\n============= Student Details =============")
+            show_one_student(find, empdb)
         else:
             print(f"Student with roll no. {stdRoll} doesn't exist!")
+    elif choice == 6:
+        # for exiting from the loop
+        choice = input('enter y/n : ')
+        if choice == 'y' or choice == 'Y':
+            flag = False
+        else:
+            flag = True
     else:
         print('Enter a valid choice!')
